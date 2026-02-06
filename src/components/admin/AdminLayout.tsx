@@ -3,12 +3,9 @@ import {
   Zap, 
   LayoutDashboard, 
   FileText, 
-  User, 
-  Settings, 
-  HelpCircle,
+  Users, 
+  ClipboardList,
   LogOut,
-  Upload,
-  TrendingUp,
   Bell,
   Shield
 } from "lucide-react";
@@ -17,22 +14,27 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
-interface DashboardLayoutProps {
+interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: FileText, label: "Invoices", href: "/dashboard/invoices" },
-  { icon: Upload, label: "Upload", href: "/dashboard/upload" },
-  { icon: TrendingUp, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: User, label: "Profile", href: "/dashboard/profile" },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+const adminNavItems = [
+  { icon: LayoutDashboard, label: "Overview", href: "/admin" },
+  { icon: FileText, label: "Deals", href: "/admin/deals" },
+  { icon: Users, label: "SMEs", href: "/admin/smes" },
+  { icon: ClipboardList, label: "Audit Log", href: "/admin/audit" },
 ];
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function AdminLayout({ children }: AdminLayoutProps) {
   const location = useLocation();
-  const { user, isAdmin, logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  const isActive = (href: string) => {
+    if (href === "/admin") {
+      return location.pathname === "/admin";
+    }
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -46,19 +48,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <span className="text-xl font-bold">
             cred<span className="text-gradient">IA</span>
           </span>
+          <span className="ml-auto px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full border border-primary/20">
+            Admin
+          </span>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.href;
+          {adminNavItems.map((item) => {
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
-                  isActive 
+                  active 
                     ? "bg-primary/10 text-primary border border-primary/20" 
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
@@ -68,30 +73,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
             );
           })}
-          
-          {/* Admin Link - only visible to ADMIN users */}
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 mt-4 border border-primary/30",
-                location.pathname.startsWith('/admin')
-                  ? "bg-primary/10 text-primary" 
-                  : "text-primary hover:bg-primary/10"
-              )}
-            >
-              <Shield className="w-5 h-5" />
-              Admin Portal
-            </Link>
-          )}
         </nav>
 
-        {/* Help & Logout */}
+        {/* Switch to SME view & Logout */}
         <div className="p-4 space-y-1 border-t border-border">
-          <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted w-full transition-all">
-            <HelpCircle className="w-5 h-5" />
-            Help & Support
-          </button>
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted w-full transition-all"
+          >
+            <Shield className="w-5 h-5" />
+            SME Portal
+          </Link>
           <button
             onClick={logout}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-full transition-all"
@@ -107,18 +99,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Top bar */}
         <header className="h-16 border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-40">
           <div>
-            <h1 className="text-lg font-semibold">Welcome back</h1>
-            <p className="text-sm text-muted-foreground">Here's what's happening with your financing</p>
+            <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Manage deals, SMEs and platform operations</p>
           </div>
 
           <div className="flex items-center gap-4">
             <RoleSwitcher />
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full" />
             </Button>
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
-              {user?.avatarInitials || 'JS'}
+              {user?.avatarInitials || 'AD'}
             </div>
           </div>
         </header>
