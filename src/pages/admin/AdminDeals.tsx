@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -26,7 +26,8 @@ import {
   ArrowUpDown
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { mockDeals, Deal } from "@/lib/mockData";
+import { getDeals } from "@/mock/mockDb";
+import type { Deal } from "@/lib/mockData";
 
 const statusOptions = [
   { value: 'all', label: 'All Statuses' },
@@ -36,6 +37,13 @@ const statusOptions = [
   { value: 'docs_requested', label: 'Docs Requested' },
   { value: 'funded', label: 'Funded' },
   { value: 'paid', label: 'Paid' },
+];
+
+const scoreBandOptions = [
+  { value: 'all', label: 'All Scores' },
+  { value: 'high', label: 'High (75+)' },
+  { value: 'medium', label: 'Medium (55-74)' },
+  { value: 'low', label: 'Low (<55)' },
 ];
 
 const getStatusBadgeType = (status: Deal['status']): 'approved' | 'pending' | 'rejected' | 'processing' => {
@@ -55,19 +63,29 @@ const getStatusBadgeType = (status: Deal['status']): 'approved' | 'pending' | 'r
 };
 
 const AdminDeals = () => {
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [scoreBand, setScoreBand] = useState("all");
   const [sortField, setSortField] = useState<keyof Deal>("submittedAt");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  const filteredDeals = mockDeals
+  useEffect(() => {
+    setDeals(getDeals());
+  }, []);
+
+  const filteredDeals = deals
     .filter(deal => {
       const matchesSearch = 
         deal.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         deal.smeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         deal.payerName.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === "all" || deal.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      let matchesScore = true;
+      if (scoreBand === 'high') matchesScore = deal.aiScore >= 75;
+      else if (scoreBand === 'medium') matchesScore = deal.aiScore >= 55 && deal.aiScore < 75;
+      else if (scoreBand === 'low') matchesScore = deal.aiScore < 55;
+      return matchesSearch && matchesStatus && matchesScore;
     })
     .sort((a, b) => {
       const aValue = a[sortField];
@@ -134,6 +152,19 @@ const AdminDeals = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Select value={scoreBand} onValueChange={setScoreBand}>
+                <SelectTrigger className="w-44">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Score band" />
+                </SelectTrigger>
+                <SelectContent>
+                  {scoreBandOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </GlassCard>
@@ -172,6 +203,7 @@ const AdminDeals = () => {
                     <ArrowUpDown className="w-3 h-3" />
                   </div>
                 </TableHead>
+                <TableHead>Decision</TableHead>
                 <TableHead>Rate</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead>Status</TableHead>
@@ -189,9 +221,9 @@ const AdminDeals = () => {
                     <div className="flex items-center gap-2">
                       <div 
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                          deal.aiScore >= 80 
+                          deal.aiScore >= 75 
                             ? 'bg-success/20 text-success' 
-                            : deal.aiScore >= 60 
+                            : deal.aiScore >= 55 
                               ? 'bg-warning/20 text-warning'
                               : 'bg-destructive/20 text-destructive'
                         }`}
@@ -199,6 +231,16 @@ const AdminDeals = () => {
                         {deal.aiScore}
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className={`text-xs font-medium ${
+                      deal.decision === 'APPROVE' ? 'text-success' :
+                      deal.decision === 'REQUEST_DOCS' ? 'text-warning' :
+                      deal.decision === 'REJECT' ? 'text-destructive' :
+                      'text-muted-foreground'
+                    }`}>
+                      {deal.decision || '—'}
+                    </span>
                   </TableCell>
                   <TableCell>
                     {deal.finalRate ? `${deal.finalRate}%` : `~${deal.suggestedRate}%`}
@@ -221,7 +263,7 @@ const AdminDeals = () => {
               ))}
               {filteredDeals.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                     No deals found matching your criteria
                   </TableCell>
                 </TableRow>

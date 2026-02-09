@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import SubmitInvoice from "./pages/dashboard/SubmitInvoice";
 import NotFound from "./pages/NotFound";
 
 // Admin pages
@@ -17,6 +18,9 @@ import AdminDeals from "./pages/admin/AdminDeals";
 import DealDetail from "./pages/admin/DealDetail";
 import AdminSMEs from "./pages/admin/AdminSMEs";
 import AdminAudit from "./pages/admin/AdminAudit";
+
+// Ensure mock DB is seeded on app boot
+import "@/mock/mockDb";
 
 const queryClient = new QueryClient();
 
@@ -33,8 +37,32 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             
-            {/* SME Dashboard routes */}
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* SME Dashboard routes — require authentication */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/submit"
+              element={
+                <ProtectedRoute>
+                  <SubmitInvoice />
+                </ProtectedRoute>
+              }
+            />
+            {/* Catch-all for other dashboard sub-routes */}
+            <Route
+              path="/dashboard/*"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             
             {/* Admin routes - protected, ADMIN only */}
             <Route

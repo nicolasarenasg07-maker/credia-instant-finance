@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -29,8 +29,10 @@ import {
   RefreshCw,
   Building2
 } from "lucide-react";
-import { mockSMEs, SME } from "@/lib/mockData";
+import { getSMEs, suspendSME, reactivateSME } from "@/mock/mockDb";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import type { SME } from "@/lib/mockData";
 
 const getKYBStatusBadge = (status: SME['kybStatus']): 'approved' | 'pending' | 'rejected' | 'processing' => {
   switch (status) {
@@ -59,9 +61,14 @@ const getRiskColor = (tier: SME['riskTier']) => {
 
 const AdminSMEs = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [smes, setSMEs] = useState(mockSMEs);
+  const [smes, setSMEs] = useState<SME[]>([]);
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const { user } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    setSMEs(getSMEs());
+  }, []);
 
   const filteredSMEs = smes.filter(sme => 
     sme.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,10 +78,9 @@ const AdminSMEs = () => {
 
   const handleSuspend = async (sme: SME) => {
     setIsProcessing(sme.id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSMEs(prev => prev.map(s => 
-      s.id === sme.id ? { ...s, kybStatus: 'suspended' as const } : s
-    ));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    suspendSME(sme.id, user?.id || 'admin-1', user?.name || 'Admin');
+    setSMEs(getSMEs()); // Refresh from localStorage
     toast({
       title: "SME Suspended",
       description: `${sme.companyName} has been suspended.`,
@@ -85,10 +91,9 @@ const AdminSMEs = () => {
 
   const handleReactivate = async (sme: SME) => {
     setIsProcessing(sme.id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setSMEs(prev => prev.map(s => 
-      s.id === sme.id ? { ...s, kybStatus: 'verified' as const } : s
-    ));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    reactivateSME(sme.id, user?.id || 'admin-1', user?.name || 'Admin');
+    setSMEs(getSMEs()); // Refresh from localStorage
     toast({
       title: "SME Reactivated",
       description: `${sme.companyName} has been reactivated.`,

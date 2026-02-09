@@ -1,13 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+// TODO: replace mock with real backend (Supabase/Firebase)
+
 export type UserRole = 'SME' | 'ADMIN';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   name: string;
   role: UserRole;
   avatarInitials: string;
+  companyName: string;
 }
 
 interface AuthContextType {
@@ -15,34 +18,38 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginAsSME: () => void;
+  loginAsAdmin: () => void;
   logout: () => void;
-  switchRole: (role: UserRole) => void; // For demo purposes
+  switchRole: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data - will be replaced with actual API calls
-const mockUsers: Record<string, User> = {
-  'admin@credia.com': {
-    id: 'admin-1',
-    email: 'admin@credia.com',
-    name: 'Admin User',
-    role: 'ADMIN',
-    avatarInitials: 'AU',
-  },
-  'sme@company.com': {
-    id: 'sme-1',
-    email: 'sme@company.com',
-    name: 'John Smith',
-    role: 'SME',
-    avatarInitials: 'JS',
-  },
+const STORAGE_KEY = 'credia_user';
+
+// Demo user presets
+const demoSME: User = {
+  id: 'sme-001',
+  email: 'sme@company.com',
+  name: 'John Smith',
+  role: 'SME',
+  avatarInitials: 'JS',
+  companyName: 'TechFlow Solutions',
+};
+
+const demoAdmin: User = {
+  id: 'admin-1',
+  email: 'admin@credia.com',
+  name: 'Admin User',
+  role: 'ADMIN',
+  avatarInitials: 'AU',
+  companyName: 'credIA',
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    // Check localStorage for existing session
-    const stored = localStorage.getItem('credia_user');
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
         return JSON.parse(stored);
@@ -50,44 +57,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
     }
-    // Default to SME user for demo
-    return mockUsers['sme@company.com'];
+    // NOT logged in by default — must use demo buttons
+    return null;
   });
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('credia_user', JSON.stringify(user));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     } else {
-      localStorage.removeItem('credia_user');
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, [user]);
 
   const login = async (email: string, _password: string) => {
-    // Mock login - in production this would call /api/auth/login
-    const foundUser = mockUsers[email];
-    if (foundUser) {
-      setUser(foundUser);
+    // Simulated login — map known emails, default to SME
+    if (email === 'admin@credia.com') {
+      setUser(demoAdmin);
     } else {
-      // Default to SME role for any email
       setUser({
-        id: `user-${Date.now()}`,
+        ...demoSME,
         email,
         name: email.split('@')[0],
-        role: 'SME',
         avatarInitials: email.substring(0, 2).toUpperCase(),
       });
     }
   };
 
+  const loginAsSME = () => setUser(demoSME);
+  const loginAsAdmin = () => setUser(demoAdmin);
+
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('credia_user');
+    localStorage.removeItem(STORAGE_KEY);
   };
 
-  // For demo purposes - allows switching between roles
   const switchRole = (role: UserRole) => {
     if (user) {
-      setUser({ ...user, role });
+      const base = role === 'ADMIN' ? demoAdmin : demoSME;
+      setUser({ ...base, role });
     }
   };
 
@@ -98,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isAdmin: user?.role === 'ADMIN',
         login,
+        loginAsSME,
+        loginAsAdmin,
         logout,
         switchRole,
       }}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -30,18 +30,20 @@ import {
   Download,
   RefreshCw
 } from "lucide-react";
-import { mockDeals, Deal } from "@/lib/mockData";
+import { getDealById, approveDeal, rejectDeal, requestDocs, sendPayerNotice } from "@/mock/mockDb";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import type { Deal } from "@/lib/mockData";
 
 const getScoreColor = (score: number) => {
-  if (score >= 80) return 'text-success';
-  if (score >= 60) return 'text-warning';
+  if (score >= 75) return 'text-success';
+  if (score >= 55) return 'text-warning';
   return 'text-destructive';
 };
 
 const getScoreBg = (score: number) => {
-  if (score >= 80) return 'bg-success/20 border-success/30';
-  if (score >= 60) return 'bg-warning/20 border-warning/30';
+  if (score >= 75) return 'bg-success/20 border-success/30';
+  if (score >= 55) return 'bg-warning/20 border-warning/30';
   return 'bg-destructive/20 border-destructive/30';
 };
 
@@ -49,13 +51,35 @@ const DealDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   
-  const deal = mockDeals.find(d => d.id === id);
-  
-  const [rateOverride, setRateOverride] = useState(deal?.suggestedRate?.toString() || "");
+  const [deal, setDeal] = useState<Deal | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [rateOverride, setRateOverride] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [docsMessage, setDocsMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      const found = getDealById(id);
+      setDeal(found);
+      if (found) {
+        setRateOverride(found.suggestedRate?.toString() || "");
+      }
+    }
+    setLoading(false);
+  }, [id]);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   if (!deal) {
     return (
@@ -74,31 +98,35 @@ const DealDetail = () => {
 
   const handleApprove = async () => {
     setIsProcessing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const rate = parseFloat(rateOverride) || deal.suggestedRate;
+    const updated = approveDeal(deal.id, rate, user?.id || 'admin-1', user?.name || 'Admin');
+    setDeal(updated);
     toast({
       title: "Deal Approved",
-      description: `Invoice ${deal.invoiceNumber} has been approved at ${rateOverride}% rate.`,
+      description: `Invoice ${deal.invoiceNumber} has been approved at ${rate}% rate.`,
     });
     setIsProcessing(false);
-    navigate('/admin/deals');
   };
 
   const handleReject = async () => {
     setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const updated = rejectDeal(deal.id, rejectReason, user?.id || 'admin-1', user?.name || 'Admin');
+    setDeal(updated);
     toast({
       title: "Deal Rejected",
       description: `Invoice ${deal.invoiceNumber} has been rejected.`,
       variant: "destructive",
     });
     setIsProcessing(false);
-    navigate('/admin/deals');
   };
 
   const handleRequestDocs = async () => {
     setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const updated = requestDocs(deal.id, docsMessage, user?.id || 'admin-1', user?.name || 'Admin');
+    setDeal(updated);
     toast({
       title: "Documentation Requested",
       description: `Request sent to ${deal.smeName} for additional documents.`,
@@ -108,7 +136,8 @@ const DealDetail = () => {
 
   const handleSendPayerNotice = async () => {
     setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    sendPayerNotice(deal.id, user?.id || 'admin-1', user?.name || 'Admin');
     toast({
       title: "Payer Notice Sent",
       description: `Payment notice sent to ${deal.payerName}.`,
@@ -124,8 +153,8 @@ const DealDetail = () => {
     });
   };
 
-  const minRate = Math.max(deal.suggestedRate - 1, 0.5);
-  const maxRate = deal.suggestedRate + 2;
+  const minRate = 1.5;
+  const maxRate = 6.0;
 
   return (
     <AdminLayout>
@@ -168,7 +197,7 @@ const DealDetail = () => {
               </div>
               <div className="bg-muted/50 rounded-lg p-8 text-center border border-border">
                 <FileText className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Document preview would appear here</p>
+                <p className="text-muted-foreground">Document preview placeholder</p>
                 <p className="text-sm text-muted-foreground mt-1">PDF viewer integration pending</p>
               </div>
             </GlassCard>
@@ -207,6 +236,26 @@ const DealDetail = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Simulated extraction flags */}
+              {deal.simulatedExtraction && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h3 className="text-sm font-medium mb-3">Document Verification Flags</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {Object.entries(deal.simulatedExtraction.flags).map(([key, val]) => (
+                      <div
+                        key={key}
+                        className={`flex items-center gap-2 p-2 rounded-lg text-xs ${
+                          val ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                        }`}
+                      >
+                        {val ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                        {key.replace(/_/g, ' ')}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </GlassCard>
 
             {/* AI Analysis */}
@@ -216,29 +265,60 @@ const DealDetail = () => {
                 <h2 className="text-lg font-semibold">AI Risk Analysis</h2>
               </div>
               
-              <div className="grid grid-cols-4 gap-4 mb-6">
+              {/* Score + Decision */}
+              <div className="flex items-center gap-4 mb-6">
                 <div className={`text-center p-4 rounded-lg border ${getScoreBg(deal.aiScore)}`}>
-                  <p className={`text-3xl font-bold ${getScoreColor(deal.aiScore)}`}>{deal.aiScore}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Final Score</p>
+                  <p className={`text-4xl font-bold ${getScoreColor(deal.aiScore)}`}>{deal.aiScore}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Score</p>
                 </div>
-                <div className={`text-center p-4 rounded-lg border ${getScoreBg(deal.invoiceRiskScore)}`}>
-                  <p className={`text-2xl font-bold ${getScoreColor(deal.invoiceRiskScore)}`}>{deal.invoiceRiskScore}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Invoice</p>
-                </div>
-                <div className={`text-center p-4 rounded-lg border ${getScoreBg(deal.payerRiskScore)}`}>
-                  <p className={`text-2xl font-bold ${getScoreColor(deal.payerRiskScore)}`}>{deal.payerRiskScore}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Payer</p>
-                </div>
-                <div className={`text-center p-4 rounded-lg border ${getScoreBg(deal.smeReliabilityScore)}`}>
-                  <p className={`text-2xl font-bold ${getScoreColor(deal.smeReliabilityScore)}`}>{deal.smeReliabilityScore}</p>
-                  <p className="text-xs text-muted-foreground mt-1">SME</p>
-                </div>
+                {deal.decision && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Decision</p>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+                      deal.decision === 'APPROVE' ? 'bg-success/20 text-success border border-success/30' :
+                      deal.decision === 'REQUEST_DOCS' ? 'bg-warning/20 text-warning border border-warning/30' :
+                      'bg-destructive/20 text-destructive border border-destructive/30'
+                    }`}>
+                      {deal.decision === 'APPROVE' && <CheckCircle className="w-4 h-4" />}
+                      {deal.decision === 'REQUEST_DOCS' && <AlertTriangle className="w-4 h-4" />}
+                      {deal.decision === 'REJECT' && <XCircle className="w-4 h-4" />}
+                      {deal.decision}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="p-4 bg-muted/30 rounded-lg">
-                <h3 className="text-sm font-medium mb-2">AI Explanation</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{deal.aiExplanation}</p>
-              </div>
+              {/* Structured explanation from scoring module */}
+              {deal.scoreExplanation && deal.scoreExplanation.length > 0 ? (
+                <div className="p-4 bg-muted/30 rounded-lg mb-4">
+                  <h3 className="text-sm font-medium mb-2">Score Breakdown</h3>
+                  <ul className="space-y-1">
+                    {deal.scoreExplanation.map((line, i) => (
+                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="p-4 bg-muted/30 rounded-lg mb-4">
+                  <h3 className="text-sm font-medium mb-2">AI Explanation</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{deal.aiExplanation}</p>
+                </div>
+              )}
+
+              {/* Assumptions */}
+              {deal.assumptionsUsed && deal.assumptionsUsed.length > 0 && (
+                <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
+                  <p className="text-sm font-medium text-warning mb-1">Assumptions Used</p>
+                  <ul className="space-y-0.5">
+                    {deal.assumptionsUsed.map((a, i) => (
+                      <li key={i} className="text-xs text-muted-foreground">• {a}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </GlassCard>
           </div>
 
@@ -409,7 +489,7 @@ const DealDetail = () => {
                   disabled={isProcessing}
                 >
                   {isProcessing ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-                  Send Payer Notice
+                  Generate Payer Notice
                 </Button>
               </GlassCard>
             )}
