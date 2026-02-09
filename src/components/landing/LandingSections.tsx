@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Brain, Shield, ArrowRight, TrendingUp, Clock, CheckCircle } from "lucide-react";
+import { Zap, Brain, Shield, ArrowRight, TrendingUp, Clock, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { scoreInvoice, type ScoreResult } from "@/scoring/scoreInvoice";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Navbar() {
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -28,12 +33,33 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/login">
-            <Button variant="ghost" size="sm">Sign in</Button>
-          </Link>
-          <Link to="/signup">
-            <Button variant="hero" size="sm">Get started</Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm">Dashboard</Button>
+              </Link>
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    <Shield className="w-4 h-4 mr-1" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
+              <Button variant="outline" size="sm" onClick={logout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">Sign in</Button>
+              </Link>
+              <Link to="/signup">
+                <Button variant="hero" size="sm">Get started</Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
@@ -115,12 +141,12 @@ export function HeroSection() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link to="/signup">
+            <a href="#pricing">
               <Button variant="hero" size="xl" className="group">
                 Check your invoice
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </Link>
+            </a>
             <Link to="/login">
               <Button variant="heroOutline" size="xl">
                 Get funded today
@@ -235,7 +261,60 @@ export function FeaturesSection() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Pre-scoring widget — calls the SAME scoreInvoice() used everywhere
+// ---------------------------------------------------------------------------
+
+function DecisionBadge({ decision }: { decision: string }) {
+  if (decision === 'APPROVE') {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-success/20 text-success border border-success/30">
+        <CheckCircle className="w-4 h-4" /> Likely Approved
+      </span>
+    );
+  }
+  if (decision === 'REQUEST_DOCS') {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-warning/20 text-warning border border-warning/30">
+        <AlertTriangle className="w-4 h-4" /> Docs Required
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-destructive/20 text-destructive border border-destructive/30">
+      <XCircle className="w-4 h-4" /> High Risk
+    </span>
+  );
+}
+
 export function PreScoringWidget() {
+  const [amount, setAmount] = useState<string>("");
+  const [days, setDays] = useState<string>("");
+  const [payerName, setPayerName] = useState<string>("");
+  const [result, setResult] = useState<ScoreResult | null>(null);
+
+  const handleScore = () => {
+    const invoiceAmount = parseFloat(amount) || 0;
+    const daysToDue = parseInt(days) || 30;
+    const payer = payerName.trim() || "Unknown Company";
+
+    if (invoiceAmount <= 0) return;
+
+    const scoreResult = scoreInvoice({
+      invoiceAmount,
+      daysToDue,
+      payerName: payer,
+      // No docCompleteness, concentrationRisk, etc. — they'll use defaults
+    });
+    setResult(scoreResult);
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 75) return 'text-success';
+    if (score >= 55) return 'text-warning';
+    return 'text-destructive';
+  };
+
   return (
     <section id="pricing" className="py-24 relative">
       <div className="container mx-auto px-4">
@@ -259,6 +338,8 @@ export function PreScoringWidget() {
                     <input
                       type="number"
                       placeholder="50,000"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
                       className="w-full h-12 pl-8 pr-4 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     />
                   </div>
@@ -268,6 +349,8 @@ export function PreScoringWidget() {
                   <input
                     type="number"
                     placeholder="30"
+                    value={days}
+                    onChange={(e) => setDays(e.target.value)}
                     className="w-full h-12 px-4 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                   />
                 </div>
@@ -277,15 +360,69 @@ export function PreScoringWidget() {
                 <label className="text-sm font-medium text-muted-foreground">Payer Company Name</label>
                 <input
                   type="text"
-                  placeholder="e.g., Acme Corporation"
+                  placeholder="e.g., Siemens AG"
+                  value={payerName}
+                  onChange={(e) => setPayerName(e.target.value)}
                   className="w-full h-12 px-4 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                 />
               </div>
 
-              <Button variant="hero" size="lg" className="w-full">
+              <Button variant="hero" size="lg" className="w-full" onClick={handleScore}>
                 Get instant estimate
                 <ArrowRight className="w-5 h-5" />
               </Button>
+
+              {/* Results */}
+              {result && (
+                <div className="mt-6 space-y-4 p-6 rounded-xl bg-muted/50 border border-border">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">AI Score</p>
+                      <p className={`text-4xl font-bold ${getScoreColor(result.score)}`}>
+                        {result.score}
+                        <span className="text-lg text-muted-foreground font-normal">/100</span>
+                      </p>
+                    </div>
+                    <DecisionBadge decision={result.decision} />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 rounded-lg bg-background/50">
+                      <p className="text-xs text-muted-foreground">Estimated Fee</p>
+                      <p className="text-xl font-bold">{result.pricing.feePercent}%</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-background/50">
+                      <p className="text-xs text-muted-foreground">Implied APR</p>
+                      <p className="text-xl font-bold">{result.pricing.impliedAPR}%</p>
+                    </div>
+                  </div>
+
+                  {/* Top explanation bullets */}
+                  <div>
+                    <p className="text-sm font-medium mb-2">Score Drivers</p>
+                    <ul className="space-y-1">
+                      {result.explanation.slice(0, 3).map((line, i) => (
+                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="text-primary mt-0.5">•</span>
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Assumptions */}
+                  {result.assumptionsUsed.length > 0 && (
+                    <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
+                      <p className="text-sm font-medium text-warning mb-1">Assumptions Used</p>
+                      <ul className="space-y-0.5">
+                        {result.assumptionsUsed.map((a, i) => (
+                          <li key={i} className="text-xs text-muted-foreground">• {a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <p className="text-xs text-center text-muted-foreground">
                 This is an estimate only. Final terms based on full application review.

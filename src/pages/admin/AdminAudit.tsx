@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,8 @@ import {
   User,
   Settings
 } from "lucide-react";
-import { mockAuditLogs, AuditLog } from "@/lib/mockData";
+import { getAuditLogs } from "@/mock/mockDb";
+import type { AuditLog } from "@/lib/mockData";
 
 const resourceTypeIcons: Record<AuditLog['resourceType'], React.ReactNode> = {
   deal: <FileText className="w-4 h-4" />,
@@ -41,17 +42,32 @@ const actionColors: Record<string, string> = {
   'DEAL_FUNDED': 'bg-primary/20 text-primary border-primary/30',
   'INVOICE_SUBMITTED': 'bg-secondary/20 text-secondary border-secondary/30',
   'SME_SUSPENDED': 'bg-destructive/20 text-destructive border-destructive/30',
+  'SME_REACTIVATED': 'bg-success/20 text-success border-success/30',
   'SME_VERIFIED': 'bg-success/20 text-success border-success/30',
   'PROFILE_UPDATED': 'bg-muted text-foreground border-border',
   'RATE_OVERRIDE': 'bg-warning/20 text-warning border-warning/30',
+  'DOCS_REQUESTED': 'bg-warning/20 text-warning border-warning/30',
+  'PAYER_NOTICE_SENT': 'bg-primary/20 text-primary border-primary/30',
 };
 
 const AdminAudit = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [resourceFilter, setResourceFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
-  const filteredLogs = mockAuditLogs.filter(log => {
+  useEffect(() => {
+    setAuditLogs(getAuditLogs());
+  }, []);
+
+  // Refresh on focus (so newly created events show immediately)
+  useEffect(() => {
+    const handleFocus = () => setAuditLogs(getAuditLogs());
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
+  const filteredLogs = auditLogs.filter(log => {
     const matchesSearch = 
       log.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -129,24 +145,24 @@ const AdminAudit = () => {
         {/* Log Stats */}
         <div className="grid grid-cols-4 gap-4">
           <GlassCard className="text-center">
-            <p className="text-3xl font-bold">{mockAuditLogs.length}</p>
+            <p className="text-3xl font-bold">{auditLogs.length}</p>
             <p className="text-sm text-muted-foreground">Total Events</p>
           </GlassCard>
           <GlassCard className="text-center">
             <p className="text-3xl font-bold text-primary">
-              {mockAuditLogs.filter(l => l.resourceType === 'deal').length}
+              {auditLogs.filter(l => l.resourceType === 'deal').length}
             </p>
             <p className="text-sm text-muted-foreground">Deal Events</p>
           </GlassCard>
           <GlassCard className="text-center">
             <p className="text-3xl font-bold text-secondary">
-              {mockAuditLogs.filter(l => l.userRole === 'ADMIN').length}
+              {auditLogs.filter(l => l.userRole === 'ADMIN').length}
             </p>
             <p className="text-sm text-muted-foreground">Admin Actions</p>
           </GlassCard>
           <GlassCard className="text-center">
             <p className="text-3xl font-bold text-warning">
-              {mockAuditLogs.filter(l => l.userRole === 'SME').length}
+              {auditLogs.filter(l => l.userRole === 'SME').length}
             </p>
             <p className="text-sm text-muted-foreground">SME Actions</p>
           </GlassCard>

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { GlassCard, StatCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -13,15 +14,24 @@ import {
   CheckCircle
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { mockDeals, mockSMEs } from "@/lib/mockData";
+import { getDeals, getSMEs } from "@/mock/mockDb";
+import type { Deal, SME } from "@/lib/mockData";
 
 const AdminOverview = () => {
-  const pendingDeals = mockDeals.filter(d => d.status === 'pending_review').length;
-  const totalFunded = mockDeals
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [smes, setSMEs] = useState<SME[]>([]);
+
+  useEffect(() => {
+    setDeals(getDeals());
+    setSMEs(getSMEs());
+  }, []);
+
+  const pendingDeals = deals.filter(d => d.status === 'pending_review').length;
+  const totalFunded = deals
     .filter(d => d.status === 'funded' || d.status === 'approved')
     .reduce((sum, d) => sum + d.amount, 0);
-  const activeSMEs = mockSMEs.filter(s => s.kybStatus === 'verified').length;
-  const highRiskDeals = mockDeals.filter(d => d.aiScore < 50).length;
+  const activeSMEs = smes.filter(s => s.kybStatus === 'verified').length;
+  const highRiskDeals = deals.filter(d => d.aiScore < 50).length;
 
   const stats = [
     { 
@@ -41,7 +51,7 @@ const AdminOverview = () => {
     { 
       label: "Active SMEs", 
       value: activeSMEs.toString(), 
-      change: `${mockSMEs.length} total registered`,
+      change: `${smes.length} total registered`,
       changeType: "neutral" as const,
       icon: <Users className="w-6 h-6" />
     },
@@ -54,7 +64,7 @@ const AdminOverview = () => {
     },
   ];
 
-  const recentDeals = mockDeals.slice(0, 5);
+  const recentDeals = deals.slice(0, 5);
 
   return (
     <AdminLayout>
@@ -134,6 +144,9 @@ const AdminOverview = () => {
                   </div>
                 </Link>
               ))}
+              {recentDeals.length === 0 && (
+                <p className="text-center text-muted-foreground py-4">No deals yet</p>
+              )}
             </div>
           </GlassCard>
 
@@ -151,7 +164,11 @@ const AdminOverview = () => {
                     <p className="text-sm text-muted-foreground">Last 30 days</p>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-success">78%</p>
+                <p className="text-2xl font-bold text-success">
+                  {deals.length > 0
+                    ? `${Math.round((deals.filter(d => d.status === 'approved' || d.status === 'funded').length / deals.length) * 100)}%`
+                    : '—'}
+                </p>
               </div>
 
               <div className="flex items-center justify-between">
@@ -160,11 +177,15 @@ const AdminOverview = () => {
                     <TrendingUp className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium">Avg. Interest Rate</p>
+                    <p className="font-medium">Avg. Fee Rate</p>
                     <p className="text-sm text-muted-foreground">Active deals</p>
                   </div>
                 </div>
-                <p className="text-2xl font-bold">3.2%</p>
+                <p className="text-2xl font-bold">
+                  {deals.length > 0
+                    ? `${(deals.reduce((s, d) => s + d.suggestedRate, 0) / deals.length).toFixed(1)}%`
+                    : '—'}
+                </p>
               </div>
 
               <div className="flex items-center justify-between">
@@ -177,7 +198,9 @@ const AdminOverview = () => {
                     <p className="text-sm text-muted-foreground">Assets under management</p>
                   </div>
                 </div>
-                <p className="text-2xl font-bold">€1.2M</p>
+                <p className="text-2xl font-bold">
+                  €{(deals.reduce((s, d) => s + d.amount, 0) / 1000).toFixed(0)}K
+                </p>
               </div>
 
               <div className="flex items-center justify-between">
@@ -202,19 +225,19 @@ const AdminOverview = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 rounded-lg bg-success/10 border border-success/20">
               <p className="text-3xl font-bold text-success">
-                {mockSMEs.filter(s => s.riskTier === 'low').length}
+                {smes.filter(s => s.riskTier === 'low').length}
               </p>
               <p className="text-sm text-muted-foreground mt-1">Low Risk</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-warning/10 border border-warning/20">
               <p className="text-3xl font-bold text-warning">
-                {mockSMEs.filter(s => s.riskTier === 'medium').length}
+                {smes.filter(s => s.riskTier === 'medium').length}
               </p>
               <p className="text-sm text-muted-foreground mt-1">Medium Risk</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-destructive/10 border border-destructive/20">
               <p className="text-3xl font-bold text-destructive">
-                {mockSMEs.filter(s => s.riskTier === 'high').length}
+                {smes.filter(s => s.riskTier === 'high').length}
               </p>
               <p className="text-sm text-muted-foreground mt-1">High Risk</p>
             </div>
