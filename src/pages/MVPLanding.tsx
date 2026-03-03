@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Zap, ArrowRight, Brain, Clock, Shield, CheckCircle, AlertTriangle, XCircle, Send, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import { scoreInvoice, type ScoreResult } from "@/scoring/scoreInvoice";
 import { submitLead, type Lead } from "@/lib/supabase";
 
@@ -61,6 +62,9 @@ function MVPNavbar() {
           <a href="#contacto" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Contacto
           </a>
+          <Link to="/nosotros" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Nosotros
+          </Link>
         </div>
         <a href="#contacto">
           <button className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity">
@@ -578,6 +582,7 @@ function MVPFooter() {
             <a href="#como-funciona" className="hover:text-foreground transition-colors">Como funciona</a>
             <a href="#simular" className="hover:text-foreground transition-colors">Simular</a>
             <a href="#contacto" className="hover:text-foreground transition-colors">Contacto</a>
+            <Link to="/nosotros" className="hover:text-foreground transition-colors">Nosotros</Link>
           </div>
           <p className="text-sm text-muted-foreground">
             &copy; 2026 credIA. Todos los derechos reservados.

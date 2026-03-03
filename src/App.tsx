@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import MVPLanding from "./pages/MVPLanding";
+import AboutUs from "./pages/AboutUs";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -35,6 +36,9 @@ const App = () => (
           <Routes>
             {/* MVP Production landing — lead capture + pre-scoring */}
             <Route path="/" element={<MVPLanding />} />
+
+            {/* About us page */}
+            <Route path="/nosotros" element={<AboutUs />} />
 
             {/* Demo app — preserved for future development */}
             <Route path="/demo" element={<Landing />} />
