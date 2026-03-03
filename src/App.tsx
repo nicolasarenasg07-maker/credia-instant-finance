@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import MVPLanding from "./pages/MVPLanding";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -32,11 +33,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Landing />} />
+            {/* MVP Production landing — lead capture + pre-scoring */}
+            <Route path="/" element={<MVPLanding />} />
+
+            {/* Demo app — preserved for future development */}
+            <Route path="/demo" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            
+
             {/* SME Dashboard routes — require authentication */}
             <Route
               path="/dashboard"
@@ -63,7 +67,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            
+
             {/* Admin routes - protected, ADMIN only */}
             <Route
               path="/admin"
@@ -105,7 +109,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
