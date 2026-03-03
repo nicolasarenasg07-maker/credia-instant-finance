@@ -337,15 +337,17 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
     email: "",
     company: "",
     phone: "",
+    seller_company: "",
     notes: "",
   });
+  const [dataConsent, setDataConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.company) return;
+    if (!form.name || !form.email || !form.company || !form.seller_company || !dataConsent) return;
 
     setStatus("sending");
 
@@ -354,6 +356,9 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
       email: form.email,
       company: form.company,
       phone: form.phone || undefined,
+      seller_company: form.seller_company,
+      data_consent: dataConsent,
+      data_consent_at: new Date().toISOString(),
       invoice_amount: prefill?.amount || 0,
       days_to_due: prefill?.days || 30,
       payer_name: prefill?.payer || "",
@@ -448,6 +453,18 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Empresa que vende la factura *</label>
+              <input
+                type="text"
+                required
+                value={form.seller_company}
+                onChange={(e) => update("seller_company", e.target.value)}
+                placeholder="Nombre de la empresa vendedora"
+                className="w-full h-12 px-4 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              />
+            </div>
+
             {prefill && prefill.amount > 0 && (
               <div className="p-4 rounded-lg bg-primary/10 border border-primary/30 text-sm space-y-1">
                 <p className="font-medium text-primary">Datos de la simulacion</p>
@@ -475,9 +492,22 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
               />
             </div>
 
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                required
+                checked={dataConsent}
+                onChange={(e) => setDataConsent(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-border accent-primary cursor-pointer"
+              />
+              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                Acepto el envio de mis datos personales y financieros para que credIA evalue opciones de financiamiento de facturas. *
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={status === "sending"}
+              disabled={status === "sending" || !dataConsent}
               className="w-full flex items-center justify-center gap-2 h-12 rounded-lg text-base font-semibold bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {status === "sending" ? (
@@ -497,7 +527,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
             )}
 
             <p className="text-xs text-center text-muted-foreground">
-              Tu informacion es confidencial. Solo la usaremos para evaluar opciones de financiamiento.
+              Tu informacion es confidencial y esta protegida. Solo la usaremos para evaluar opciones de financiamiento. Al enviar este formulario, tu consentimiento queda registrado.
             </p>
           </form>
         </div>

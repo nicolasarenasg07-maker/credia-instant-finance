@@ -12,6 +12,9 @@
  *      email text not null,
  *      company text not null,
  *      phone text,
+ *      seller_company text not null,
+ *      data_consent boolean not null default false,
+ *      data_consent_at timestamptz,
  *      invoice_amount numeric not null,
  *      days_to_due integer not null,
  *      payer_name text not null,
@@ -36,6 +39,9 @@ export interface Lead {
   email: string;
   company: string;
   phone?: string;
+  seller_company: string;
+  data_consent: boolean;
+  data_consent_at?: string;
   invoice_amount: number;
   days_to_due: number;
   payer_name: string;
