@@ -1,34 +1,85 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CO">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>credIA - Financiamiento Inteligente de Facturas | Liquidez Inmediata para PYMEs</title>
-    <meta name="description" content="Convierte tus facturas por cobrar en liquidez inmediata. credIA usa inteligencia artificial para evaluar riesgo y financiar facturas en menos de 24 horas." />
+    <title>credIA - Factoring Digital en Colombia | Financiamiento de Facturas para PYMEs</title>
+    <meta name="description" content="Financia tus facturas por cobrar en Colombia. credIA usa inteligencia artificial para evaluar riesgo y adelantar el pago de tus facturas en menos de 24 horas. Factoring digital para PYMEs colombianas." />
     <meta name="author" content="credIA" />
-    <meta name="keywords" content="factoring, financiamiento de facturas, liquidez PYMEs, descuento de facturas, factoring digital, fintech, inteligencia artificial" />
+    <meta name="keywords" content="factoring Colombia, financiamiento de facturas Colombia, descuento de facturas, liquidez PYMEs Colombia, factoring digital, fintech Colombia, factoring para pymes, adelanto de facturas, pronto pago facturas" />
     <link rel="canonical" href="https://credia.finance/" />
 
-    <meta property="og:title" content="credIA - Liquidez Inmediata para tus Facturas" />
-    <meta property="og:description" content="Sube tus facturas por cobrar, recibe una evaluacion AI en minutos y obtiene financiamiento en menos de 24 horas." />
+    <!-- Geo targeting Colombia -->
+    <meta name="geo.region" content="CO" />
+    <meta name="geo.placename" content="Colombia" />
+    <meta name="content-language" content="es-CO" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="credIA - Factoring Digital para PYMEs en Colombia" />
+    <meta property="og:description" content="Convierte tus facturas por cobrar en liquidez inmediata. Evaluacion con IA en minutos, financiamiento en menos de 24 horas." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://credia.finance/" />
     <meta property="og:site_name" content="credIA" />
-    <meta property="og:locale" content="es_LA" />
+    <meta property="og:locale" content="es_CO" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="credIA - Financiamiento Inteligente de Facturas" />
-    <meta name="twitter:description" content="Convierte facturas en liquidez inmediata con evaluacion AI en minutos." />
+    <meta name="twitter:title" content="credIA - Factoring Digital para PYMEs en Colombia" />
+    <meta name="twitter:description" content="Financia tus facturas por cobrar en Colombia con evaluacion AI en minutos." />
 
+    <!-- Structured Data: FinancialService -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FinancialService",
       "name": "credIA",
-      "description": "Plataforma de financiamiento de facturas impulsada por inteligencia artificial para PYMEs.",
+      "description": "Plataforma de factoring digital impulsada por inteligencia artificial para PYMEs en Colombia. Financiamiento de facturas por cobrar en menos de 24 horas.",
       "url": "https://credia.finance",
-      "areaServed": "LATAM",
-      "serviceType": "Invoice Financing"
+      "areaServed": {
+        "@type": "Country",
+        "name": "Colombia",
+        "sameAs": "https://es.wikipedia.org/wiki/Colombia"
+      },
+      "serviceType": ["Factoring", "Invoice Financing", "Descuento de facturas"],
+      "provider": {
+        "@type": "Organization",
+        "name": "credIA",
+        "url": "https://credia.finance"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: FAQPage for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Que es el factoring digital?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "El factoring digital es un servicio financiero que permite a las PYMEs convertir sus facturas por cobrar en liquidez inmediata a traves de una plataforma en linea, sin necesidad de tramites presenciales."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como funciona credIA para financiar facturas en Colombia?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sube los datos de tu factura, nuestra inteligencia artificial evalua el riesgo del pagador en minutos, y si es aprobada, recibes el financiamiento en menos de 24 horas directamente en tu cuenta."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Cuanto cuesta el factoring con credIA?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "La tasa depende del monto de la factura, el plazo de vencimiento y la calidad del pagador. Puedes simular tu factura gratis en nuestra plataforma para obtener un estimado inmediato."
+          }
+        }
+      ]
     }
     </script>
   </head>
