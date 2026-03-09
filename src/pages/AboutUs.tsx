@@ -69,7 +69,7 @@ function AboutHero() {
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Somos una plataforma de financiamiento de facturas que usa inteligencia artificial
-            para dar liquidez rapida a las pequenas y medianas empresas de Colombia.
+            para dar liquidez rápida a las pequeñas y medianas empresas de Colombia.
           </p>
         </div>
       </div>
@@ -89,20 +89,20 @@ function AboutWhoWeAre() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl md:text-4xl font-bold">
-                Quienes <span className="text-gradient">somos</span>
+                Quiénes <span className="text-gradient">somos</span>
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 credIA es una plataforma de financiamiento de facturas que forma parte de una empresa
                 dedicada a impulsar el crecimiento de las PYMEs en el mercado colombiano.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Combinamos tecnologia de inteligencia artificial con un profundo conocimiento del
-                ecosistema empresarial colombiano para ofrecer soluciones de liquidez rapidas,
+                Combinamos tecnología de inteligencia artificial con un profundo conocimiento del
+                ecosistema empresarial colombiano para ofrecer soluciones de liquidez rápidas,
                 transparentes y accesibles.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Nacimos con la conviccion de que las pequenas y medianas empresas son el motor
-                del desarrollo economico y social de Colombia, y que merecen acceso a herramientas
+                Nacimos con la convicción de que las pequeñas y medianas empresas son el motor
+                del desarrollo económico y social de Colombia, y que merecen acceso a herramientas
                 financieras que antes solo estaban disponibles para las grandes corporaciones.
               </p>
             </div>
@@ -110,7 +110,7 @@ function AboutWhoWeAre() {
               {[
                 { value: "PYMEs", label: "Enfoque exclusivo", icon: Building2 },
                 { value: "Colombia", label: "Mercado principal", icon: Users },
-                { value: "IA", label: "Tecnologia avanzada", icon: TrendingUp },
+                { value: "IA", label: "Tecnología avanzada", icon: TrendingUp },
                 { value: "24h", label: "Tiempo de respuesta", icon: Zap },
               ].map((stat) => (
                 <div key={stat.label} className="glass rounded-2xl p-6 text-center hover:border-primary/50 transition-all">
@@ -135,21 +135,21 @@ function AboutMissionVision() {
   const items = [
     {
       icon: Target,
-      title: "Nuestra Mision",
+      title: "Nuestra Misión",
       description:
-        "Mejorar los resultados financieros de las PYMEs colombianas a traves de soluciones de financiamiento accesibles e impulsadas por inteligencia artificial, permitiendoles crecer, generar empleo y contribuir al desarrollo del pais.",
+        "Mejorar los resultados financieros de las PYMEs colombianas a través de soluciones de financiamiento accesibles e impulsadas por inteligencia artificial, permitiéndoles crecer, generar empleo y contribuir al desarrollo del país.",
     },
     {
       icon: Eye,
-      title: "Nuestra Vision",
+      title: "Nuestra Visión",
       description:
-        "Ser la plataforma lider de financiamiento de facturas en Colombia, reconocida por democratizar el acceso al capital de trabajo y por ser el aliado tecnologico de confianza de las PYMEs.",
+        "Ser la plataforma líder de financiamiento de facturas en Colombia, reconocida por democratizar el acceso al capital de trabajo y por ser el aliado tecnológico de confianza de las PYMEs.",
     },
     {
       icon: Heart,
       title: "Lo que creemos",
       description:
-        "Creemos firmemente que las empresas generan desarrollo en la sociedad. Cada PYME que crece crea empleos, fortalece comunidades y transforma vidas. Nuestro trabajo es asegurarnos de que la falta de liquidez nunca sea un obstaculo para ese crecimiento.",
+        "Creemos firmemente que las empresas generan desarrollo en la sociedad. Cada PYME que crece crea empleos, fortalece comunidades y transforma vidas. Nuestro trabajo es asegurarnos de que la falta de liquidez nunca sea un obstáculo para ese crecimiento.",
     },
   ];
 
@@ -158,10 +158,10 @@ function AboutMissionVision() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Nuestro <span className="text-gradient">proposito</span>
+            Nuestro <span className="text-gradient">propósito</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Cada decision que tomamos esta guiada por nuestra mision de impactar positivamente el ecosistema empresarial colombiano
+            Cada decisión que tomamos está guiada por nuestra misión de impactar positivamente el ecosistema empresarial colombiano
           </p>
         </div>
 
@@ -191,17 +191,17 @@ function AboutWhyPYMEs() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <h2 className="text-3xl md:text-5xl font-bold">
-            Por que las <span className="text-gradient">PYMEs</span>
+            Por qué las <span className="text-gradient">PYMEs</span>
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            En Colombia, las PYMEs representan mas del 90% del tejido empresarial y generan
+            En Colombia, las PYMEs representan más del 90% del tejido empresarial y generan
             cerca del 80% del empleo. Sin embargo, muchas enfrentan barreras para acceder a
             financiamiento tradicional: procesos lentos, requisitos excesivos y tasas elevadas.
           </p>
           <p className="text-lg text-muted-foreground leading-relaxed">
             En credIA, usamos inteligencia artificial para evaluar el riesgo de las facturas de
-            forma justa y eficiente. Esto nos permite ofrecer financiamiento rapido a empresas que
-            el sistema tradicional muchas veces ignora, ayudandolas a convertir sus cuentas por
+            forma justa y eficiente. Esto nos permite ofrecer financiamiento rápido a empresas que
+            el sistema tradicional muchas veces ignora, ayudándolas a convertir sus cuentas por
             cobrar en liquidez inmediata para seguir operando y creciendo.
           </p>
           <Link to="/#contacto">

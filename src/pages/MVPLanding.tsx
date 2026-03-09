@@ -54,7 +54,7 @@ function MVPNavbar() {
         <Logo />
         <div className="hidden md:flex items-center gap-8">
           <a href="#como-funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Como funciona
+            Cómo funciona
           </a>
           <a href="#simular" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Simular
@@ -100,7 +100,7 @@ function MVPHero() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Sube tus facturas por cobrar. Nuestra IA evalua el riesgo en tiempo real.
+            Sube tus facturas por cobrar. Nuestra IA evalúa el riesgo en tiempo real.
             Recibe financiamiento en menos de 24 horas.
           </p>
 
@@ -131,19 +131,19 @@ const steps = [
   {
     number: "01",
     title: "Sube tu factura",
-    description: "Comparte los datos basicos de tu factura por cobrar: monto, plazo y pagador.",
+    description: "Comparte los datos básicos de tu factura por cobrar: monto, plazo y pagador.",
     icon: FileText,
   },
   {
     number: "02",
-    title: "Evaluacion AI",
+    title: "Evaluación AI",
     description: "Nuestra inteligencia artificial analiza el riesgo del pagador y las condiciones de la factura.",
     icon: Brain,
   },
   {
     number: "03",
-    title: "Decision inmediata",
-    description: "Recibe una pre-aprobacion en minutos con la tasa estimada de financiamiento.",
+    title: "Decisión inmediata",
+    description: "Recibe una pre-aprobación en minutos con la tasa estimada de financiamiento.",
     icon: Clock,
   },
   {
@@ -160,7 +160,7 @@ function MVPHowItWorks() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Como funciona <span className="text-gradient">credIA</span>
+            Cómo funciona <span className="text-gradient">credIA</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             De factura a liquidez en cuatro pasos simples
@@ -223,7 +223,7 @@ function MVPPreScoring({
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Simula tu factura</h2>
             <p className="text-lg text-muted-foreground">
-              Obtiene un estimado inmediato de aprobacion y tasa
+              Obtén un estimado inmediato de aprobación y tasa
             </p>
           </div>
 
@@ -244,7 +244,7 @@ function MVPPreScoring({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Dias para vencimiento</label>
+                  <label className="text-sm font-medium text-muted-foreground">Días para vencimiento</label>
                   <input
                     type="number"
                     placeholder="30"
@@ -293,7 +293,7 @@ function MVPPreScoring({
                       <p className="text-xl font-bold">{result.pricing.feePercent}%</p>
                     </div>
                     <div className="p-3 rounded-lg bg-background/50">
-                      <p className="text-xs text-muted-foreground">APR implicito</p>
+                      <p className="text-xs text-muted-foreground">APR implícito</p>
                       <p className="text-xl font-bold">{result.pricing.impliedAPR}%</p>
                     </div>
                   </div>
@@ -321,7 +321,7 @@ function MVPPreScoring({
               )}
 
               <p className="text-xs text-center text-muted-foreground">
-                Este es un estimado preliminar. Los terminos finales se determinan tras la revision completa.
+                Este es un estimado preliminar. Los términos finales se determinan tras la revisión completa.
               </p>
             </div>
           </div>
@@ -384,9 +384,9 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
             <div className="w-20 h-20 rounded-full bg-success/20 flex items-center justify-center mx-auto">
               <CheckCircle className="w-10 h-10 text-success" />
             </div>
-            <h2 className="text-3xl font-bold">Recibimos tu informacion</h2>
+            <h2 className="text-3xl font-bold">Recibimos tu información</h2>
             <p className="text-lg text-muted-foreground">
-              Nos pondremos en contacto contigo en las proximas 24 horas para discutir las opciones de financiamiento para tu factura.
+              Nos pondremos en contacto contigo en las próximas 24 horas para discutir las opciones de financiamiento para tu factura.
             </p>
           </div>
         </div>
@@ -400,7 +400,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Dejanos tus datos
+              Déjanos tus datos
             </h2>
             <p className="text-lg text-muted-foreground">
               Te contactamos para evaluar tu factura y darte una propuesta concreta
@@ -416,7 +416,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
                   required
                   value={form.name}
                   onChange={(e) => update("name", e.target.value)}
-                  placeholder="Juan Perez"
+                  placeholder="Juan Pérez"
                   className="w-full h-12 px-4 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                 />
               </div>
@@ -446,7 +446,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Telefono</label>
+                <label className="text-sm font-medium text-muted-foreground">Teléfono</label>
                 <input
                   type="tel"
                   value={form.phone}
@@ -471,11 +471,11 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
 
             {prefill && prefill.amount > 0 && (
               <div className="p-4 rounded-lg bg-primary/10 border border-primary/30 text-sm space-y-1">
-                <p className="font-medium text-primary">Datos de la simulacion</p>
+                <p className="font-medium text-primary">Datos de la simulación</p>
                 <p className="text-muted-foreground">
                   Monto: <span className="text-foreground font-medium">${prefill.amount.toLocaleString()}</span>
                   {" | "}Pagador: <span className="text-foreground font-medium">{prefill.payer}</span>
-                  {" | "}Plazo: <span className="text-foreground font-medium">{prefill.days} dias</span>
+                  {" | "}Plazo: <span className="text-foreground font-medium">{prefill.days} días</span>
                   {prefill.score != null && (
                     <>
                       {" | "}Score: <span className="text-foreground font-medium">{prefill.score}/100</span>
@@ -490,7 +490,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
               <textarea
                 value={form.notes}
                 onChange={(e) => update("notes", e.target.value)}
-                placeholder="Cuentanos mas sobre tus necesidades de financiamiento..."
+                placeholder="Cuéntanos más sobre tus necesidades de financiamiento..."
                 rows={3}
                 className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
               />
@@ -505,7 +505,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
                 className="mt-1 w-4 h-4 rounded border-border accent-primary cursor-pointer"
               />
               <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                Acepto el envio de mis datos personales y financieros para que credIA evalue opciones de financiamiento de facturas. *
+                Acepto el envío de mis datos personales y financieros para que credIA evalúe opciones de financiamiento de facturas. *
               </span>
             </label>
 
@@ -519,7 +519,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  Enviar informacion
+                  Enviar información
                 </>
               )}
             </button>
@@ -531,7 +531,7 @@ function MVPContactForm({ prefill }: { prefill: { amount: number; days: number; 
             )}
 
             <p className="text-xs text-center text-muted-foreground">
-              Tu informacion es confidencial y esta protegida. Solo la usaremos para evaluar opciones de financiamiento. Al enviar este formulario, tu consentimiento queda registrado.
+              Tu información es confidencial y está protegida. Solo la usaremos para evaluar opciones de financiamiento. Al enviar este formulario, tu consentimiento queda registrado.
             </p>
           </form>
         </div>
@@ -550,9 +550,9 @@ function MVPTrust() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8">
           {[
-            { icon: Brain, title: "Evaluacion con IA", desc: "Analisis de riesgo inteligente que evalua la calidad del pagador y las condiciones de la factura." },
-            { icon: Clock, title: "Respuesta en minutos", desc: "Obtiene una pre-aprobacion y tasa estimada de forma inmediata, sin papeleos." },
-            { icon: Shield, title: "Datos protegidos", desc: "Tu informacion financiera esta encriptada y se maneja con los mas altos estandares de seguridad." },
+            { icon: Brain, title: "Evaluación con IA", desc: "Análisis de riesgo inteligente que evalúa la calidad del pagador y las condiciones de la factura." },
+            { icon: Clock, title: "Respuesta en minutos", desc: "Obtén una pre-aprobación y tasa estimada de forma inmediata, sin papeleos." },
+            { icon: Shield, title: "Datos protegidos", desc: "Tu información financiera está encriptada y se maneja con los más altos estándares de seguridad." },
           ].map((f) => (
             <div key={f.title} className="gradient-border p-8 rounded-2xl text-center hover:scale-[1.02] transition-transform">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-6">
@@ -579,7 +579,7 @@ function MVPFooter() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
           <div className="flex items-center gap-8 text-sm text-muted-foreground">
-            <a href="#como-funciona" className="hover:text-foreground transition-colors">Como funciona</a>
+            <a href="#como-funciona" className="hover:text-foreground transition-colors">Cómo funciona</a>
             <a href="#simular" className="hover:text-foreground transition-colors">Simular</a>
             <a href="#contacto" className="hover:text-foreground transition-colors">Contacto</a>
             <Link to="/nosotros" className="hover:text-foreground transition-colors">Nosotros</Link>
